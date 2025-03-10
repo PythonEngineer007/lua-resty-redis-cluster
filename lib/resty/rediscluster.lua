@@ -136,6 +136,13 @@ function _M.fetch_slots(self)
         local port = serv_list[i].port
         local ok, err = red:connect(ip_string(ip), port)
         if ok then
+            if self.config.password then
+                local auth_ok, auth_err = red:auth(self.config.password)
+                if not auth_ok then
+                    error("Cluster Authentication failed")
+                    return nil, auth_err
+                end
+            end
             local slot_info, err = red:cluster("slots")
             if slot_info then
                 local slots = {}
